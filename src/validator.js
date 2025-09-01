@@ -2,18 +2,16 @@ import * as yup from "yup"
 
 yup.setLocale({
   mixed: {
-    required: "Не должно быть пустым",
-    notOneOf: "RSS уже добавлен",
+    required: "errors.required",
+    notOneOf: "errors.duplicate",
   },
   string: {
-    url: "Ссылка должна быть валидным URL",
+    url: "errors.url",
   },
 });
 
 const validateUrl = (url, existingUrls) => {
   const schema = yup.string().trim().required().url().notOneOf(existingUrls);
-
-  // validate() — асинхронная, возвращает промис
   return schema.validate(url);
 };
 
