@@ -1,5 +1,6 @@
-import "bootstrap"
+import { Modal } from "bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
+
 import fetchRss from "./api"
 import initI18n from "./i18n"
 import parseRss from "./parser"
@@ -23,13 +24,9 @@ const updateAllFeedsOnce = (state, fetchRssImpl, parseRssImpl) => {
       .then((rss) => {
         const { posts } = parseRssImpl(rss);
         const newOnes = diffNewPosts(posts, state.posts, feed.id);
-        if (newOnes.length > 0) {
-          state.posts.push(...newOnes);
-        }
+        if (newOnes.length > 0) state.posts.push(...newOnes);
       })
-      .catch(() => {
-        // Глотаем ошибку конкретного фида, чтобы не валить весь цикл обновления
-      })
+      .catch(() => {})
   );
 
   return Promise.allSettled(tasks).then(() => undefined);
@@ -50,12 +47,22 @@ document.addEventListener("DOMContentLoaded", () => {
     input: document.getElementById("rss-url"),
     feedback: document.getElementById("rss-feedback"),
     submit: document.querySelector('#rss-form button[type="submit"]'),
+
+    postsContainer: document.getElementById("posts"),
+    modalEl: document.getElementById("postModal"),
+    modalTitle: document.getElementById("postModalLabel"),
+    modalBody: document.getElementById("postModalBody"),
+    modalLink: document.getElementById("postModalLink"),
   };
 
   const state = {
     feeds: [],
     posts: [],
     form: { status: "idle", errorKey: null, messageKey: null },
+    ui: {
+      readPosts: [],
+      currentPostId: null,
+    },
   };
 
   initI18n().then((i18n) => {
@@ -64,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const watchedState = initView(state, elements, i18n);
 
-    // Запускаем фоновое обновление всех добавленных фидов
     startUpdates(watchedState, fetchRss, parseRss, 5000);
 
     elements.form.addEventListener("submit", (e) => {
@@ -93,26 +99,54 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch((err) => {
           if (err.name === "ValidationError") {
-            watchedState.form.errorKey = err.message; // ключ из yup.setLocale
+            watchedState.form.errorKey = err.message;
             watchedState.form.status = "invalid";
             return;
           }
-
           if (err.isAxiosError) {
             watchedState.form.errorKey = "errors.networkError";
             watchedState.form.status = "invalid";
             return;
           }
-
           if (err.message === "parseError") {
             watchedState.form.errorKey = "errors.parseError";
             watchedState.form.status = "invalid";
             return;
           }
-
           watchedState.form.errorKey = "errors.unknown";
           watchedState.form.status = "invalid";
         });
+    });
+
+    const bsModal = new Modal(elements.modalEl);
+
+    elements.postsContainer.addEventListener("click", (e) => {
+      const previewBtn = e.target.closest(".preview-btn");
+      const linkEl = e.target.closest("a[data-id]");
+
+      if (linkEl) {
+        const id = Number(linkEl.dataset.id);
+        if (!watchedState.ui.readPosts.includes(id)) {
+          watchedState.ui.readPosts.push(id);
+        }
+        return;
+      }
+
+      if (previewBtn) {
+        const id = Number(previewBtn.dataset.id);
+        watchedState.ui.currentPostId = id;
+        if (!watchedState.ui.readPosts.includes(id)) {
+          watchedState.ui.readPosts.push(id);
+        }
+
+        const post = watchedState.posts.find((p) => p.id === id);
+        if (post) {
+          elements.modalTitle.textContent = post.title;
+          elements.modalBody.textContent = post.description;
+          elements.modalLink.href = post.link;
+          bsModal.show();
+        }
+      }
     });
   });
 });
