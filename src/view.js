@@ -26,18 +26,30 @@ export default (state, elements, i18n) =>
     }
 
     if (["feeds", "posts", "ui.readPosts"].includes(path)) {
+      const feedsPostsBlock = document.getElementById("feeds-posts-block");
       const feedsContainer = document.getElementById("feeds");
       const postsContainer = document.getElementById("posts");
 
+      if (state.feeds.length === 0) {
+        feedsPostsBlock.classList.add("d-none");
+        feedsContainer.innerHTML = "";
+        postsContainer.innerHTML = "";
+        return;
+      }
+
+      feedsPostsBlock.classList.remove("d-none");
+
       feedsContainer.innerHTML = "";
       state.feeds.forEach((feed) => {
-        const div = document.createElement("div");
-        div.classList.add("mb-3");
-        div.innerHTML = `
-          <h3 class="h5">${feed.title}</h3>
-          <p class="mb-0 text-muted">${feed.description}</p>
-        `;
-        feedsContainer.append(div);
+        const li = document.createElement("li");
+        li.className = "list-group-item border-0 border-end-0";
+
+        li.innerHTML = `
+      <h3 class="h6 m-0">${feed.title}</h3>
+      <p class="m-0 small text-black-50">${feed.description}</p>
+    `;
+
+        feedsContainer.append(li);
       });
 
       postsContainer.innerHTML = "";
@@ -46,7 +58,7 @@ export default (state, elements, i18n) =>
 
         const li = document.createElement("li");
         li.className =
-          "d-flex align-items-start justify-content-between gap-2 mb-2";
+          "list-group-item d-flex justify-content-between align-items-start border-0 border-end-0";
 
         const link = document.createElement("a");
         link.href = post.link;
@@ -60,7 +72,9 @@ export default (state, elements, i18n) =>
         btn.type = "button";
         btn.className = "btn btn-outline-primary btn-sm preview-btn";
         btn.dataset.id = post.id;
-        btn.textContent = "Предпросмотр";
+        btn.setAttribute("data-bs-toggle", "modal");
+        btn.setAttribute("data-bs-target", "#postModal");
+        btn.textContent = i18n.t("post.preview");
 
         li.append(link, btn);
         postsContainer.append(li);
