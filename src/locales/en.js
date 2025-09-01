@@ -7,8 +7,11 @@ export default {
     },
     errors: {
       required: "Must not be empty",
-      url: "Must be a valid URL",
-      duplicate: "RSS already exists",
+      url: "The link must be a valid URL",
+      duplicate: "RSS is already added",
+      networkError: "Network error",
+      parseError: "Resource does not contain valid RSS",
+      unknown: "Unknown error",
     },
   },
 };

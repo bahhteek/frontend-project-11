@@ -27,4 +27,29 @@ export default (state, elements, i18n) =>
         input.focus();
       }
     }
+
+    if (path === "feeds" || path === "posts") {
+      const feedsContainer = document.getElementById("feeds");
+      const postsContainer = document.getElementById("posts");
+
+      feedsContainer.innerHTML = "";
+      postsContainer.innerHTML = "";
+
+      state.feeds.forEach((feed) => {
+        const div = document.createElement("div");
+        div.classList.add("mb-3");
+        div.innerHTML = `
+          <h3>${feed.title}</h3>
+          <p>${feed.description}</p>
+        `;
+        feedsContainer.append(div);
+      });
+
+      state.posts.forEach((post) => {
+        const li = document.createElement("li");
+        li.classList.add("mb-1");
+        li.innerHTML = `<a href="${post.link}" target="_blank">${post.title}</a>`;
+        postsContainer.append(li);
+      });
+    }
   });
