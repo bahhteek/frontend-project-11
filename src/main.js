@@ -10,16 +10,16 @@ import initView from './view'
 const genId = () => Date.now() + Math.random()
 
 const diffNewPosts = (freshPosts, existingPosts, feedId) => {
-  const existingLinks = new Set(existingPosts.map((p) => p.link))
+  const existingLinks = new Set(existingPosts.map(p => p.link))
   return freshPosts
-    .filter((p) => !existingLinks.has(p.link))
-    .map((p) => ({ id: genId(), feedId, ...p }))
+    .filter(p => !existingLinks.has(p.link))
+    .map(p => ({ id: genId(), feedId, ...p }))
 }
 
 const updateAllFeedsOnce = (state, fetchRssImpl, parseRssImpl) => {
   if (state.feeds.length === 0) return Promise.resolve()
 
-  const tasks = state.feeds.map((feed) =>
+  const tasks = state.feeds.map(feed =>
     fetchRssImpl(feed.url)
       .then((rss) => {
         const { posts } = parseRssImpl(rss)
@@ -77,21 +77,21 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault()
 
       const url = new FormData(elements.form).get('url').trim()
-      const existing = watchedState.feeds.map((f) => f.url)
+      const existing = watchedState.feeds.map(f => f.url)
 
       watchedState.form.status = 'checking'
       watchedState.form.errorKey = null
       watchedState.form.messageKey = null
 
       validateUrl(url, existing)
-        .then((cleanUrl) => fetchRss(cleanUrl))
+        .then(cleanUrl => fetchRss(cleanUrl))
         .then((rssContent) => {
           const { feed, posts } = parseRss(rssContent)
 
           const feedId = genId()
           watchedState.feeds.push({ id: feedId, url, ...feed })
 
-          const postsWithId = posts.map((p) => ({ id: genId(), feedId, ...p }))
+          const postsWithId = posts.map(p => ({ id: genId(), feedId, ...p }))
           watchedState.posts.push(...postsWithId)
 
           watchedState.form.messageKey = 'form.success'
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
           watchedState.ui.readPosts.push(id)
         }
 
-        const post = watchedState.posts.find((p) => p.id === id)
+        const post = watchedState.posts.find(p => p.id === id)
         if (post) {
           elements.modalTitle.textContent = post.title
           elements.modalBody.textContent = post.description

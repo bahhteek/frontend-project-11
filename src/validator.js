@@ -13,6 +13,6 @@ yup.setLocale({
 const validateUrl = (url, existingUrls) => {
   const schema = yup.string().trim().required().url().notOneOf(existingUrls)
   return schema.validate(url)
-};
+}
 
 export default validateUrl

@@ -12,7 +12,7 @@ export default (rssContent) => {
     description: doc.querySelector('channel > description')?.textContent ?? '',
   }
 
-  const posts = Array.from(doc.querySelectorAll('item')).map((item) => ({
+  const posts = Array.from(doc.querySelectorAll('item')).map(item => ({
     title: item.querySelector('title')?.textContent ?? '',
     link: item.querySelector('link')?.textContent ?? '',
     description: item.querySelector('description')?.textContent ?? '',
