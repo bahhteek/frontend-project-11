@@ -26,7 +26,7 @@ const updateAllFeedsOnce = (state, fetchRssImpl, parseRssImpl) => {
         const newOnes = diffNewPosts(posts, state.posts, feed.id)
         if (newOnes.length > 0) state.posts.push(...newOnes)
       })
-      .catch(() => {})
+      .catch(() => {}),
   )
 
   return Promise.allSettled(tasks).then(() => undefined)

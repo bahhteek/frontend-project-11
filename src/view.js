@@ -57,8 +57,7 @@ export default (state, elements, i18n) =>
         const isRead = state.ui.readPosts.includes(post.id)
 
         const li = document.createElement('li')
-        li.className 
-        = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0'
+        li.className = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0'
 
         const link = document.createElement('a')
         link.href = post.link
