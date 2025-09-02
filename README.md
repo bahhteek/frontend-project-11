@@ -3,7 +3,7 @@
 
 ### Demo
 Приложение задеплоено на Vercel:  
-🔗 [frontend-project-11.vercel.app](https://frontend-project-11-77vb6i8n5-1manalievb.vercel.app/)
+🔗 [frontend-project-11.vercel.app](https://frontend-project-11-flax-rho.vercel.app/)
 
 ---
 
